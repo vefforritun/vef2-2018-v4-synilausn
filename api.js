@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 const {
-  departments,
+  schools,
   getTests,
   clearCache,
   getStats,
@@ -45,16 +45,17 @@ function catchErrors(fn) {
 function indexRoute(req, res) {
   const timer = timerStart();
 
-  const depts = departments.map(dept => ({
-    name: dept.name,
-    link: `/${dept.slug}`,
+  const list = schools.map(school => ({
+    name: school.name,
+    link: `/${school.slug}`,
+    slug: school.slug,
   }));
 
   const elapsed = timerEnd(timer);
 
   res.json({
     elapsed,
-    departments: depts,
+    schools: list,
     clearCache: '/clearCache',
     stats: '/stats',
   });
@@ -72,7 +73,6 @@ async function testsRoute(req, res, next) {
     return next(error);
   }
 
-
   if (tests === null) {
     return next();
   }
@@ -81,7 +81,7 @@ async function testsRoute(req, res, next) {
 
   return res.json({
     elapsed,
-    tests,
+    school: tests,
   });
 }
 

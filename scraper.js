@@ -26,7 +26,7 @@ const asyncDel = util.promisify(client.del).bind(client);
  * Listi af sviðum með „slug“ fyrir vefþjónustu og viðbættum upplýsingum til
  * að geta sótt gögn.
  */
-const departments = [
+const schools = [
   {
     name: 'Félagsvísindasvið',
     id: 1,
@@ -92,7 +92,7 @@ async function cache(key, value) {
  * @param {number} id - Id á sviði í Uglu
  * @returns {Promise} - Promise sem mun innihalda fylki af sviðum með deildum og prófum
  */
-async function fetchAndParse(id) {
+async function fetchAndParse(id, heading) {
   const url = `https://ugla.hi.is/Proftafla/View/ajax.php?sid=2027&a=getProfSvids&proftaflaID=37&svidID=${id}&notaVinnuToflu=0`;
 
   const result = await fetch(url);
@@ -106,12 +106,12 @@ async function fetchAndParse(id) {
   const data = json.html;
 
   const $ = cheerio.load(data);
-  const headings = $('h3');
+  const departmentHeadings = $('h3');
 
-  const parsed = [];
+  const departments = [];
 
-  headings.each((i, el) => {
-    const heading = $(el).text().trim();
+  departmentHeadings.each((i, el) => {
+    const departmentHeading = $(el).text().trim();
 
     const rows = $(el).next('table').find('tbody tr');
     const tests = [];
@@ -131,13 +131,13 @@ async function fetchAndParse(id) {
       });
     });
 
-    parsed.push({
-      heading,
+    departments.push({
+      heading: departmentHeading,
       tests,
     });
   });
 
-  return parsed;
+  return { heading, departments };
 }
 
 /**
@@ -147,7 +147,7 @@ async function fetchAndParse(id) {
  * @returns {Promise} Promise sem mun innihalda gögn fyrir svið eða null ef það finnst ekki
  */
 async function getTests(slug) {
-  const item = departments.find(i => i.slug === slug);
+  const item = schools.find(i => i.slug === slug);
 
   if (!item) {
     return null;
@@ -160,7 +160,7 @@ async function getTests(slug) {
     return cached;
   }
 
-  const data = await fetchAndParse(item.id);
+  const data = await fetchAndParse(item.id, item.name);
 
   await cache(key, data);
 
@@ -195,11 +195,11 @@ async function getStats() {
   let numTests = 0;
   let numStudents = 0;
 
-  const all = await Promise.all(departments.map(d => getTests(d.slug)));
+  const all = await Promise.all(schools.map(d => getTests(d.slug)));
 
-  all.forEach((dept) => {
-    dept.forEach((section) => {
-      section.tests.forEach((test) => {
+  all.forEach((school) => {
+    school.departments.forEach((department) => {
+      department.tests.forEach((test) => {
         const { students } = test;
 
         numTests += 1;
@@ -228,7 +228,7 @@ async function getStats() {
 }
 
 module.exports = {
-  departments,
+  schools,
   getTests,
   clearCache,
   getStats,
