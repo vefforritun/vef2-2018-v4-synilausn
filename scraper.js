@@ -71,7 +71,7 @@ async function getFromCache(key) {
 }
 
 /**
- * Geymir gögn í `value` í cache undir `key``
+ * Geymir gögn í `value` í cache undir `key`
  *
  * @param key - Lykill til að geyma gögn undir
  * @param value - Gildi til að geyma

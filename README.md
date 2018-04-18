@@ -1,5 +1,7 @@
 # Verkefni 4 – okkar eigið apis.is
 
+[Yfirferð á sýnilausn](https://youtu.be/0gWkgC4YB7Q)
+
 [apis.is](https://apis.is) verkefnið nýtir scraping til að gera aðgengileg gögn frá íslenskum vefjum. Í þessu verkefni ætlum við að útbúa okkar eigin vefþjónustu ofan á [próftöflu gögn HÍ fyrir vormisseri 2018](https://ugla.hi.is/Proftafla/View/index.php?view=proftaflaYfirlit&sid=2030&proftaflaID=37). Þar sem gögnin breytast lítið skulu þau vera geymd (cached) í redis í a.m.k. 2 klukkustundir. Einnig skal birta smá tölfræði um prófatöflurnar.
 
 ## Próftöflur
